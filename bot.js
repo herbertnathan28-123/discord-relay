@@ -22,14 +22,22 @@ client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
   if (message.channel.name !== CHANNEL_NAME) return;
 
-  // Must contain two /a markers
-  if (!message.content.includes('/a')) return;
+let fullText = '';
 
-  const parts = message.content.split('/a');
-  if (parts.length < 3) return;
+if (message.attachments.size > 0) {
+  const attachment = message.attachments.first();
+  const response = await fetch(attachment.url);
+  fullText = await response.text();
+} else {
+  fullText = message.content;
+}
 
-  const teamData = parts[1].trim();
+if (!fullText.includes('/a')) return;
 
+const parts = fullText.split('/a');
+if (parts.length < 3) return;
+
+const teamData = parts[1].trim();
   const payload = {
     type: "allianceUpload",
     discordId: message.author.id,
