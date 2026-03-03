@@ -27,11 +27,11 @@ client.on('messageCreate', async (message) => {
   if (!match) return;
 
   const teamData = match[1].trim();
-  const payload = {
-    team: teamData,
-    timestamp_utc: new Date().toISOString()
-  };
-
+const payload = {
+  type: "allianceUpload",
+  discordId: message.author.id,
+  rawText: teamData
+};
   await fetch(WEBHOOK_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
