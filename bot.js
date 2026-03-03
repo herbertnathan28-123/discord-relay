@@ -1,10 +1,10 @@
 require('dotenv').config();
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const { Client, GatewayIntentBits } = require('discord.js');
 
 const DISCORD_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const CHANNEL_NAME = 'pace-upload';
-const WEBHOOK_URL = 'https://atlas-nathan28.app.n8n.cloud/webhook/alliance-pace-upload';
+const WEBHOOK_URL = 'https://atlas-nathan28.app.n8n.cloud/webhook/alliance-upload-production';
 
 const client = new Client({
   intents: [
@@ -21,25 +21,32 @@ client.once('ready', () => {
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
   if (message.channel.name !== CHANNEL_NAME) return;
-  if (!message.content.startsWith('/a')) return;
 
-  const regex = /^\/a\s*([\s\S]*?)\s*\/a$/m;
-  const match = message.content.match(regex);
-  if (!match) return;
+  // Must contain two /a markers
+  if (!message.content.includes('/a')) return;
 
-  const teamData = match[1].trim();
-const payload = {
-  type: "allianceUpload",
-  discordId: message.author.id,
-  rawText: teamData
-};
-  await fetch(WEBHOOK_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  const parts = message.content.split('/a');
+  if (parts.length < 3) return;
 
-  console.log('Relayed to n8n');
+  const teamData = parts[1].trim();
+
+  const payload = {
+    type: "allianceUpload",
+    discordId: message.author.id,
+    rawText: teamData
+  };
+
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    console.log('Relayed to n8n');
+  } catch (err) {
+    console.error('Error sending to n8n:', err);
+  }
 });
 
 client.login(DISCORD_TOKEN);
