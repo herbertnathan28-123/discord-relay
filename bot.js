@@ -23,7 +23,7 @@ client.on('messageCreate', async (message) => {
   if (message.channel.name !== CHANNEL_NAME) return;
   if (!message.content.startsWith('/a')) return;
 
-  const regex = /\/a\s*([\s\S]*?)\/a/;
+  const regex = /^\/a\s*([\s\S]*?)\s*\/a$/m;
   const match = message.content.match(regex);
   if (!match) return;
 
