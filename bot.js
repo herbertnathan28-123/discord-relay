@@ -19,6 +19,7 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', async (message) => {
+console.log("Message seen:", message.channel.name);
   if (message.author.bot) return;
   if (message.channel.name !== CHANNEL_NAME) return;
 
