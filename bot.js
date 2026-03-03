@@ -1,5 +1,4 @@
 require('dotenv').config();
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const { Client, GatewayIntentBits } = require('discord.js');
 
 const DISCORD_TOKEN = process.env.DISCORD_BOT_TOKEN;
@@ -19,26 +18,28 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', async (message) => {
-console.log("Message seen:", message.channel.name);
+  console.log("Message seen:", message.channel.name);
+
   if (message.author.bot) return;
   if (message.channel.name !== CHANNEL_NAME) return;
 
-let fullText = '';
+  let fullText = '';
 
-if (message.attachments.size > 0) {
-  const attachment = message.attachments.first();
-  const response = await fetch(attachment.url);
-  fullText = await response.text();
-} else {
-  fullText = message.content;
-}
+  if (message.attachments.size > 0) {
+    const attachment = message.attachments.first();
+    const response = await fetch(attachment.url);
+    fullText = await response.text();
+  } else {
+    fullText = message.content;
+  }
 
-if (!fullText.includes('/a')) return;
+  if (!fullText.includes('/a')) return;
 
-const parts = fullText.split('/a');
-if (parts.length < 3) return;
+  const parts = fullText.split('/a');
+  if (parts.length < 3) return;
 
-const teamData = parts[1].trim();
+  const teamData = parts[1].trim();
+
   const payload = {
     type: "allianceUpload",
     discordId: message.author.id,
